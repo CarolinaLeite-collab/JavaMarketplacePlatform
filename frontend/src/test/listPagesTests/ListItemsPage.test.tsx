@@ -54,7 +54,7 @@ const mockOwnerListResponse = {
     name: "My Reading List",
     itemsId: ["item-1"],
     _links: {
-        "remove-item": { href: "http://localhost:8081/my-lists/1/items" },
+        "add-item": { href: "http://localhost:8081/my-lists/1" },
     },
 };
 
@@ -164,7 +164,7 @@ describe("ListItemsPage", () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.queryByRole("button", { name: /add item/i })).not.toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: /add item to list/i })).not.toBeInTheDocument();
         });
     });
 
@@ -175,7 +175,7 @@ describe("ListItemsPage", () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.queryByRole("button", { name: /add/i })).not.toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: /add item to list/i })).not.toBeInTheDocument();
         });
     });
 

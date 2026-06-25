@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useDisclosure} from '@mantine/hooks';
 import {
-    ActionIcon,
     Button,
     Center,
     Checkbox,
@@ -14,7 +13,6 @@ import {
     Text,
     Tooltip,
 } from '@mantine/core';
-import {IconPlus} from '@tabler/icons-react';
 import {apiClient} from '../../services/apiClient';
 
 interface LibraryItem {
@@ -27,9 +25,10 @@ interface Props {
     libraryHref: string | null;
     existingItemIds: string[];
     onConfirm: (selectedIds: string[]) => void;
+    children: React.ReactNode;
 }
 
-export function AddItemToListDropDown({ listName, libraryHref, existingItemIds, onConfirm }: Props) {
+export function AddItemToListDropDown({ listName, libraryHref, existingItemIds, onConfirm, children }: Props) {
     const [opened, { open, close }] = useDisclosure(false);
     const [selected, setSelected] = useState<string[]>([]);
     const [items, setItems] = useState<LibraryItem[]>([]);
@@ -73,15 +72,9 @@ export function AddItemToListDropDown({ listName, libraryHref, existingItemIds, 
             width={320}
         >
             <Popover.Target>
-                <ActionIcon
-                    variant="filled"
-                    color="indigo"
-                    size="md"
-                    radius="sm"
-                    onClick={opened ? close : open}
-                >
-                    <IconPlus size={20} stroke={1.5} />
-                </ActionIcon>
+                <div onClick={opened ? close : open}>
+                    {children}
+                </div>
             </Popover.Target>
 
             <Popover.Dropdown p="sm">

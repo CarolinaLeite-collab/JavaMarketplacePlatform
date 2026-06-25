@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class ListOfItemsService {
+
     private IListOfItemsRepo _listOfItemsRepo;
     private ListOfItemsFactory _factory;
     private IGenreRepo _genreRepo;
@@ -63,7 +64,11 @@ public class ListOfItemsService {
             throw new IllegalArgumentException("Genre doesn't exist");
         }
 
-        if (getUserLists(userId).contains(name.toString())) {
+        // FIXED: Correct duplicate-name validation
+        boolean exists = getUserLists(userId).stream()
+                .anyMatch(list -> list.getName().toString().equals(name.toString()));
+
+        if (exists) {
             throw new IllegalArgumentException("List already exists");
         }
 
@@ -119,7 +124,7 @@ public class ListOfItemsService {
         return list;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ListOfItems> findByGenre(GenreId genreId) {
 
         Iterable<ListOfItems> lists = _listOfItemsRepo.findAll();
