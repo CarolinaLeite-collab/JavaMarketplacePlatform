@@ -135,8 +135,7 @@ public class EditionRestController {
 
     @RequestMapping(path = "/by-publication", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsForPublication(
-            @RequestHeader("X-User-Id") String email,
-            @RequestParam String publicationId) {
+            @RequestHeader("X-User-Id") String email) {
 
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
