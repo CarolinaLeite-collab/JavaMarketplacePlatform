@@ -1,0 +1,79 @@
+services:
+
+  db:
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-h2:${APP_VERSION:?set APP_VERSION}
+    env_file:
+      - .env.prod
+    volumes:
+      - mitelovers-data:/opt/h2-data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # NOTE: resource limits below require Swarm; ignored by `docker compose up`.
+    # Kept as documentation of intended limits for a future orchestrated deployment.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "256M"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9092 || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-backend:${APP_VERSION:?set APP_VERSION}
+    ports:
+      - "2228:8081"
+    env_file:
+      - .env.prod
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-frontend:${APP_VERSION:?set APP_VERSION}
+    ports:
+      - "2226:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "128M"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  mitelovers-data:

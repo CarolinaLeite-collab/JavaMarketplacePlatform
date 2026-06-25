@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.sale.SaleLine;
-import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;

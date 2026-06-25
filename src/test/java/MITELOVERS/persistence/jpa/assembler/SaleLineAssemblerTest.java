@@ -1,10 +1,10 @@
 package MITELOVERS.persistence.jpa.assembler;
 
-import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.sale.SaleLineFactory;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
+import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import MITELOVERS.persistence.jpa.datamodel.SaleLineDataModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

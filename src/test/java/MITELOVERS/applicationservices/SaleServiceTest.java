@@ -8,7 +8,6 @@ import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.sale.SaleLineFactory;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
-import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

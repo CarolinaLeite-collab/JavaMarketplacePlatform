@@ -7,7 +7,6 @@ import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.domain.valueobject.Currency;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

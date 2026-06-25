@@ -3,6 +3,7 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import MITELOVERS.domain.valueobject.UserId;
 
 class UserServiceTest {
 

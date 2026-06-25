@@ -6,7 +6,7 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;

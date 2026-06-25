@@ -1,6 +1,9 @@
 package MITELOVERS.domain.sale;
 
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.SaleLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

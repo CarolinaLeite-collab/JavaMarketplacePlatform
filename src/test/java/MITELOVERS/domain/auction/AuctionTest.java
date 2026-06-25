@@ -1,7 +1,6 @@
 package MITELOVERS.domain.auction;
 
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

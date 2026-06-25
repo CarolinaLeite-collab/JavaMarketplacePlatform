@@ -4,8 +4,6 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleStatus;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;

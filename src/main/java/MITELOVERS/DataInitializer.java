@@ -91,6 +91,11 @@ public class DataInitializer {
 
         return args -> {
 
+            if (genreRepo.findAllKeys().iterator().hasNext()) {
+                log.info("Database already seeded — skipping DataInitializer.");
+                return;
+            }
+
             // -------------------------------------------------------
             // Genre
             // Create and save a few Genres

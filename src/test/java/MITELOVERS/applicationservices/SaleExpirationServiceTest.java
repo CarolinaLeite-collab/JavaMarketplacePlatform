@@ -5,7 +5,6 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import MITELOVERS.domain.valueobject.ItemId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

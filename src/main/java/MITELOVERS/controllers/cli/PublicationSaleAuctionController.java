@@ -2,7 +2,9 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.AuctionService;
 import MITELOVERS.domain.auction.Auction;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 

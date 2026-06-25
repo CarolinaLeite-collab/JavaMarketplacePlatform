@@ -1,13 +1,17 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.auction.Auction;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.domain.valueobject.Currency;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

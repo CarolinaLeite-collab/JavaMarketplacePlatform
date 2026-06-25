@@ -25,6 +25,10 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Quality Gates](#quality-gates)
     * [Security Findings Severity Reporting](#security-findings-severity-reporting)
   * [Test Coverage](#test-coverage)
+  * [OWASP Security Tests](#owasp-security-tests)
+    * [Accepted-Risk Documentation Pattern](#accepted-risk-documentation-pattern)
+    * [Test Classes](#test-classes)
+    * [Running the Security Tests](#running-the-security-tests)
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
@@ -35,7 +39,6 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Run Tests on Pull Request](#run-tests-on-pull-request)
     * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
     * [License Risk Management](#license-risk-management)
-      * [License Policy](#license-policy)
   * [SpringBoot application.properties](#springboot-applicationproperties)
     * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
   * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
@@ -57,12 +60,29 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Frontend](#frontend)
     * [Image Security](#image-security)
   * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
-      * [Application service and image build](#application-service-and-image-build)
+      * [Backend service and image build](#backend-service-and-image-build)
       * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
       * [Runtime security hardening](#runtime-security-hardening)
-      * [Health check](#health-check)
+      * [Frontend service](#frontend-service)
+      * [Health checks](#health-checks)
       * [Running it](#running-it)
       * [Validation](#validation)
+    * [Build, Scan, and Publish Docker Images](#build-scan-and-publish-docker-images)
+        * [Workflow Overview](#workflow-overview)
+        * [Security Enforcement](#security-enforcement)
+        * [Image Publication](#image-publication)
+        * [Versioning, Traceability, and Delivery Evidence](#versioning-traceability-and-delivery-evidence)
+        * [Summary Table](#summary-table)
+        * [How to Use the Images Locally](#how-to-use-the-images-locally)
+  * [DevSecOps Pipeline – Evidence of Successful Execution](#devsecops-pipeline--evidence-of-successful-execution)
+    * [Pipeline Overview](#pipeline-overview)
+    * [Stage 1 – Secret Detection (Gitleaks)](#stage-1--secret-detection-gitleaks)
+    * [Stage 2 – SAST (Semgrep)](#stage-2--sast-semgrep)
+    * [Stage 3 – Build & Test with Coverage](#stage-3--build--test-with-coverage)
+    * [Stage 4 – Dependency Scan (OWASP Dependency-Check + License Scan)](#stage-4--dependency-scan-owasp-dependency-check--license-scan)
+    * [Stage 5 – Container Scan (Trivy)](#stage-5--container-scan-trivy)
+    * [Stage 6 – Team Notifications (Discord)](#stage-6--team-notifications-discord)
+    * [Summary](#summary)
 <!-- TOC -->
 ___
 
@@ -237,6 +257,53 @@ mvn clean verify
 ```
 
 The HTML report is available at `target/site/jacoco/index.html`.
+
+___
+
+## OWASP Security Tests
+
+The project maintains a dedicated security test suite under `src/test/java/MITELOVERS/security/`, covering all ten categories of the OWASP Top 10 across the 2021 and 2025 editions. These tests do **not** verify that the application is secure — they document known vulnerabilities and formally record accepted risks as executable specifications.
+
+### Accepted-Risk Documentation Pattern
+
+Each test is designed to **pass precisely because the vulnerability it describes is present**. This creates a traceable, version-controlled record of acknowledged risk: if the underlying issue is resolved (e.g. authentication is added, inputs are validated, or cryptographic configuration is hardened), the corresponding test will fail, prompting the team to either update the test to reflect the new security posture or confirm that the fix was intentional.
+
+All test classes carry Javadoc headers that explain:
+
+- what the vulnerability is and how it manifests in the current code;
+- why the test is expected to pass (the risk is acknowledged, not fixed);
+- what remediation would look like, and why it is out of scope for the current sprint.
+
+### Test Classes
+
+| Class | OWASP Category | Test Mechanism | What It Documents |
+|---|---|---|---|
+| `ListOfItemsOWASPSecurityTest` | A01:2021 Broken Access Control | `@WebMvcTest` + MockMvc | List endpoints accept mutating requests without ownership verification (IDOR) |
+| `UserEnumerationSecurityTest` | A04:2021 Insecure Design | `@WebMvcTest` + MockMvc | Email existence is inferrable from distinct error responses, enabling account enumeration |
+| `InsecureConfigurationSecurityTest` | A05:2021 Security Misconfiguration | Plain JUnit + properties file | H2 console enabled in dev profile without auth; no Spring Security configured in any profile |
+| `SupplyChainSecurityTest` | A03:2025 Supply Chain Failures | Plain JUnit + `package.json` | Frontend dependencies use unpinned `^` version ranges with no lockfile shrinkwrap |
+| `CryptographicFailuresSecurityTest` | A04:2025 Cryptographic Failures | Plain JUnit + properties file | Empty datasource password; no TLS keystore configured in any profile |
+| `InjectionSecurityTest` | A05:2025 Injection | `@WebMvcTest` + MockMvc | SQL-like and special-character payloads reach the service layer unsanitised |
+| `AuthenticationFailuresSecurityTest` | A07:2025 Authentication Failures | `@WebMvcTest` + MockMvc | Fabricated `X-User-Id` headers are accepted; absent header is not rejected |
+| `DataIntegritySecurityTest` | A08:2025 Data Integrity Failures | `@WebMvcTest` + MockMvc | Mutating requests succeed on replay; `X-Content-Type-Options` header is absent |
+| `SecurityLoggingSecurityTest` | A09:2025 Logging & Alerting Failures | Plain JUnit + Logback context | No dedicated security log level or audit logger is configured |
+| `ExceptionHandlingSecurityTest` | A10:2025 Mishandling of Exceptions | `@WebMvcTest` + MockMvc | Internal domain exception messages (aggregate IDs, class names) propagated verbatim in HTTP responses |
+
+### Running the Security Tests
+
+All security test classes are annotated with `@Tag("security")` and participate in the standard Maven test phase. No running application or database connection is required: `@WebMvcTest` tests use mocked service beans, and plain JUnit tests read configuration files directly from `src/main/resources/`.
+
+Run the full test suite (includes security tests):
+
+```bash
+mvn test
+```
+
+Run only the security tests:
+
+```bash
+mvn test -Dtest="*SecurityTest"
+```
 
 ___
 
@@ -1905,15 +1972,43 @@ This ensures:
 - Traceability
 - Immutable versioning
 
+##### Versioning, Traceability, and Delivery Evidence
+
+To satisfy US076, the Docker image workflow was extended so that the final backend and frontend images are not only built and scanned, but also fully traceable to the source revision that produced them.
+
+During the build process, both images receive metadata that identifies:
+- the image version;
+- the source commit SHA;
+- the build timestamp.
+
+This information is passed to the Docker build and embedded in the final image as OCI labels, allowing the produced artifact to be inspected later and linked back to the exact source commit that generated it.
+
+The labels added to the final images include:
+- `org.opencontainers.image.version`
+- `org.opencontainers.image.revision`
+- `org.opencontainers.image.created`
+
+In addition to embedding metadata in the images themselves, the workflow also generates a final delivery evidence artifact named `docker-delivery-evidence`.
+
+This artifact records, for both backend and frontend images:
+- the image name;
+- the generated tags;
+- the final image digest;
+- the source commit SHA;
+- the build timestamp;
+- the workflow run information.
+
+By combining image metadata with a delivery evidence artifact, the project ensures that published Docker images are versioned, auditable, and reproducible.
+
 ##### Summary Table
 
 | Stage | Backend | Frontend | Blocking |
 | --- | --- | --- | --- |
-| Build image | ✔️ | ✔️ | Yes |
-| Trivy scan | ✔️ | ✔️ | CRITICAL/HIGH |
-| Push to GHCR | ✔️ (main only) | ✔️ (main only) | Yes |
-| Metadata & labels | ✔️ | ✔️ | No |
-| Build caching | ✔️ | ✔️ | No |
+| Build image | ✅ | ✅ | Yes |
+| Trivy scan | ✅ | ✅ | CRITICAL/HIGH |
+| Push to GHCR | ✅ (main only) | ✅ (main only) | Yes |
+| Metadata & labels | ✅ | ✅ | No |
+| Build caching | ✅ | ✅ | No |
 
 ##### How to Use the Images Locally
 
@@ -1922,6 +2017,157 @@ Pull the latest backend image: ````docker pull ghcr.io/<owner>/mitelovers-backen
 Pull the latest frontend image: ````docker pull ghcr.io/<owner>/mitelovers-frontend:latest````
 
 Or run them together using Docker Compose (see the Docker section).
+
+___
+
+## DevSecOps Pipeline – Evidence of Successful Execution
+
+> This section includes evidence of successful build, test, SAST, dependency scan, and container scan stages, for an objective assessment of the DevSecOps workflow.
+
+---
+
+### Pipeline Overview
+
+The DevSecOps workflow is implemented across four GitHub Actions pipelines: two security pipelines enforcing quality gates on pull requests targeting main, and two notification pipelines that keep the team informed of PR lifecycle events via Discord.
+
+The following table provides links to successfull runs, where every log, produced artifact and report can be found, consulted and downloaded for assessment.
+
+| Workflow | Trigger                    | Run                                                                                                                          |
+|---|----------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| Hardened Security Pipeline | PR to `main` / `b3` / `b4` | [Run #28094188131](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131) |
+| Build, Scan, and Publish Docker Images | PR to `main` / manual      | [Run #28094188110](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188110) |
+| Notify Discord on PR Creation | PR opened / reopened       | [Run #27959553831](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/27959553831) |                                                                                                                         |
+| Notify Discord on PR Merge | PR merged                  | [Run #28021345395](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28021345395)            |
+
+All security stages enforce quality gates: a failing gate blocks the pipeline and prevents merging. 
+
+Notification workflows run independently and have no gates.
+
+---
+
+### Stage 1 – Secret Detection (Gitleaks)
+
+**Tool:** Gitleaks v8.27.2  
+**Workflow:** Hardened Security Pipeline  
+**Purpose:** Scans the full Git history for hardcoded secrets, credentials, and API keys before any other stage is allowed to run. All downstream jobs depend on this stage passing.
+
+**Gate:** Pipeline fails and a PR comment is posted if any secret is detected.
+
+**Artifacts produced:**
+- [gitleaks-report.json](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7847693512) — full findings report (empty array on clean run)
+
+---
+
+### Stage 2 – SAST (Semgrep)
+
+**Tool:** Semgrep (auto ruleset) + custom Spring misconfiguration rules  
+**Workflow:** Hardened Security Pipeline  
+**Jobs:** `semgrep-sast` · `config-scan`  
+**Purpose:** Static analysis of application source code (`src/`, `frontend/`, `.github/`, `pom.xml`) and Spring Boot configuration files for known vulnerability patterns and insecure settings.
+
+**Gate:** Pipeline fails if any finding of `ERROR` severity is detected.
+
+**Artifacts produced:**
+- [semgrep-sast-report](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7847710760) — `semgrep-report.json` with all findings grouped by severity
+- [config-scan-report](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7847702628) — `config-scan-report.json` from custom Spring misconfiguration ruleset
+
+**PR comment:** Findings are [automatically posted](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/pull/1157#issuecomment-4788593718) as a formatted table on the pull request, grouped by severity (ERROR/WARNING/INFO).
+
+---
+
+### Stage 3 – Build & Test with Coverage
+
+**Tool:** Maven · JUnit · JaCoCo · Vitest · React Testing Library  
+**Workflow:** Hardened Security Pipeline  
+**Job:** `build-and-test-with-coverage`  
+**Purpose:** Compiles the backend (Java 21 / Spring Boot) and frontend (React/TypeScript/Vite), runs all unit test suites, and measures code coverage.
+
+**Gate:** Build fails if any test fails. Runs only after SAST, config scan, and license scan pass.
+
+**Artifacts produced:**
+- [mitelovers-<run_number>.jar](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7851555798) — compiled application artifact (uploaded on success only)
+- [jacoco-report/](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7851556915) — full JaCoCo HTML coverage report
+- [sbom-cyclonedx](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188131/artifacts/7851557765) — `bom.xml` CycloneDX Software Bill of Materials
+
+**PR comment:** JaCoCo coverage summary is [posted automatically](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/pull/1157#issuecomment-4789979221) via `madrapps/jacoco-report`.
+
+---
+
+### Stage 4 – Dependency Scan (OWASP Dependency-Check + License Scan)
+
+**Tools:** OWASP Dependency-Check · Maven License Plugin  
+**Workflow:** Hardened Security Pipeline  
+**Jobs:** `build-and-test-with-coverage` (OWASP) · `license-scan`  
+**Purpose:** Identifies known CVEs in third-party dependencies (SCA) and flags dependencies with non-approved or unknown licenses.
+
+**Gates:**
+- OWASP: build fails on any vulnerability with CVSS ≥ 7
+- License: build fails on any dependency with AGPL or GPL license without an approved exception
+
+**Artifacts produced:**
+- `dependency-check-report` — `dependency-check-report.html` (full OWASP report)
+- `dependency-check-json` — `dependency-check-report.json` (machine-readable)
+- `third-party-licenses` — `THIRD-PARTY.txt` + `license-findings.json`
+
+**PR comments:** Both scans post formatted tables to the pull request — [OWASP findings](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/pull/1157#issuecomment-4789977596) sorted by CVSS score, [license findings](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/pull/1157#issuecomment-4788591116) flagged by risk level.
+
+---
+
+### Stage 5 – Container Scan (Trivy)
+
+**Tool:** Trivy v0.36.0 (Aqua Security)  
+**Workflow:** Build, Scan, and Publish Docker Images  
+**Jobs:** `backend` · `frontend`  
+**Purpose:** Scans the built Docker images for OS and application-layer vulnerabilities before any image is pushed to the registry (GHCR). Images are built locally (`load: true`) for scanning and only pushed on merge to `main`.
+
+**Gate:** Pipeline fails on any unfixed vulnerability of CRITICAL or HIGH severity.
+
+**Artifacts produced:**
+- [trivy-backend-report](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188110/artifacts/7847747453) — `trivy-backend-report.txt`
+- [trivy-frontend-report](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/actions/runs/28094188110/artifacts/7847705802) — `trivy-frontend-report.txt`
+
+**PR comments:** Trivy table output for both images is [posted automatically](https://github.com/Departamento-de-Engenharia-Informatica/switch-project-team_b/pull/1157#issuecomment-4788606109) on the pull request.
+
+---
+
+### Stage 6 – Team Notifications (Discord)
+
+**Tool:** Discord Incoming Webhooks  
+**Workflows:** Notify Discord on PR Creation · Notify Discord on PR Merge  
+**Purpose:** Keeps the team informed of PR lifecycle events in real time, without requiring members to monitor GitHub directly.
+
+**Triggers:**
+- **PR opened or reopened** → posts to the team's Discord channel with PR number, title, author, target branch, and link
+- **PR merged** → posts a merge confirmation with the same metadata to a dedicated webhook
+
+**Secrets used:** `DISCORD_INCOMING_PR_WEBHOOK` · `DISCORD_WEBHOOK` (stored as repository secrets; values never exposed in logs)
+
+---
+
+### Summary
+
+This section includes evidence for the four GitHub Actions pipelines covering secret detection, static analysis, licence compliance, build, test, dependency scanning, container scanning, and team notification. 
+
+Every security stage enforces a quality gate that blocks merging on failure, and each produces a downloadable artifact and/or an automated PR comment as objective, timestamped evidence. 
+
+Together, these pipelines satisfy the requirements for demonstrable evidence of successful build, test, SAST, dependency scan, and container scan stages.
+
+| Stage | Tool | Gate Enforced | Artifact | PR Comment |
+|---|---|---|---|---|
+| Secret Detection | Gitleaks | ✅ | `gitleaks-report.json` | ✅ (on failure) |
+| SAST | Semgrep | ✅ (ERROR severity) | `semgrep-report.json` | ✅ |
+| Config Scan | Semgrep (custom rules) | ✅ | `config-scan-report.json` | — |
+| License Scan | Maven License Plugin | ✅ (AGPL/GPL) | `THIRD-PARTY.txt` | ✅ |
+| Build | Maven + Vite | ✅ | `mitelovers-<n>.jar` | — |
+| Test + Coverage | JUnit + JaCoCo + Vitest | ✅ | `jacoco-report/` | ✅ |
+| SBOM | CycloneDX | — | `bom.xml` | — |
+| Dependency Scan | OWASP Dependency-Check | ✅ (CVSS ≥ 7) | `dependency-check-report.html` | ✅ |
+| Container Scan | Trivy | ✅ (CRITICAL/HIGH) | `trivy-backend/frontend-report.txt` | ✅ |
+| Team Notification | Discord Webhooks | — | — | Discord channel |
+
+All stages passed. Artifacts are available for download on the respective workflow run pages linked [above](#pipeline-overview).
+
+
 
 ---
 

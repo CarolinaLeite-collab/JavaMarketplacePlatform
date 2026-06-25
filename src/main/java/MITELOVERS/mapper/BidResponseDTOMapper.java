@@ -6,8 +6,6 @@ import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.dto.response.BidResponseDTO;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-
 /**
  * Mapper responsible for converting {@link Bid} domain entities into {@link BidResponseDTO} instances.
  <p>

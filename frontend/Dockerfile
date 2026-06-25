@@ -1,12 +1,27 @@
+ARG APP_VERSION=local
+ARG VCS_REF=unknown
+ARG BUILD_DATE=unknown
+
 FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS builder
 
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 COPY . .
+ARG VITE_API_URL=http://localhost:8081
+ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged@sha256:557201bef46137df29721e3c14ab969775ddfb277ac2de8b693cb4decec8ce76
+
+ARG APP_VERSION
+ARG VCS_REF
+ARG BUILD_DATE
+
+LABEL org.opencontainers.image.title="mitelovers-frontend" \
+      org.opencontainers.image.version="${APP_VERSION}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_DATE}"
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
