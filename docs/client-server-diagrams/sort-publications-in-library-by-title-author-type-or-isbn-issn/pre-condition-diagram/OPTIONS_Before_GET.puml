@@ -1,0 +1,44 @@
+@startuml
+'==== Title ====
+title OPTIONS for User on /my-library - SD %n()
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User
+participant ":Frontend" as Frontend
+participant ":Backend" as Backend
+participant ":Database" as database
+
+User -> Frontend : Render my possible actions %n()on my library.
+activate Frontend
+
+Frontend -> Backend : OPTIONS {library href} X-User-Id: {email}
+activate Backend
+
+ref over Backend
+[[../rest-sd-ref-diagrams/OPTIONS_My_Library_SD.puml OPTIONS for user on /my-library]]
+end ref
+
+Backend --> Frontend : 200 OK + Allow: [OPTIONS, GET, POST]
+deactivate Backend
+
+Frontend --> User : These are your options.
+deactivate Frontend
+
+ref over User
+Process_View_Level_SD_3.puml]
+end ref
+
+@enduml
