@@ -4,6 +4,7 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
 
         when(authorizationPolicy.canSell(user)).thenReturn(true);
+        when(authorizationPolicy.cannotSeePrice(user)).thenReturn(false);
 
         // SUT
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
@@ -44,6 +46,7 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
 
         when(authorizationPolicy.canSell(user)).thenReturn(false);
+        when(authorizationPolicy.cannotSeePrice(user)).thenReturn(false);
 
         // SUT
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
@@ -53,6 +56,69 @@ class AuctionLinkProviderTest {
 
         // Assert
         assertTrue(links.isEmpty());
+    }
+
+    @Test
+    void getLinksUserCannotSeePriceContainsAuctionsWithoutPriceLink() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canSell(user)).thenReturn(false);
+        when(authorizationPolicy.cannotSeePrice(user)).thenReturn(true);
+
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<Link> links = linkProvider.getLinks(user);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(l -> l.getRel().value().equals("auctions-without-price")));
+    }
+
+    @Test
+    void getLinksUserCanSellAndCannotSeePriceContainsBothLinks() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canSell(user)).thenReturn(true);
+        when(authorizationPolicy.cannotSeePrice(user)).thenReturn(true);
+
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<Link> links = linkProvider.getLinks(user);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(l -> l.getRel().value().equals("auctions")));
+        assertTrue(links.stream()
+                .anyMatch(l -> l.getRel().value().equals("auctions-without-price")));
+    }
+
+    @Test
+    void addLinksForAuctionNoPriceAddsAuctionsAndAuctionsWithoutPriceLinks() {
+        AuctionNoPriceResponseDTO dto = new AuctionNoPriceResponseDTO(
+                "AU-12345678",
+                List.of("ABCDEF1234"),
+                Instant.parse("2026-06-10T10:00:00Z"),
+                Instant.parse("2026-06-20T10:00:00Z"),
+                "pedro@aeiou.com"
+        );
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        linkProvider.addLinksForAuction(dto);
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("auctions")));
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("auctions-without-price")));
     }
 
     @Test
@@ -209,7 +275,7 @@ class AuctionLinkProviderTest {
     // ------------------------------------------------------------
 
     @Test
-    void getAllowedMethodsForBidsUserCanViewAndBidContainsOptionsGetAndPost() {
+    void getAllowedMethodsForBidsUserCanBidButIsSellerContainsNoPost() {
         User user = mock(User.class);
         Auction auctionDouble = mock(Auction.class);
         UserId userIdDouble = mock(UserId.class);
@@ -217,8 +283,31 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
         when(authorizationPolicy.canViewAuction(user)).thenReturn(true);
         when(authorizationPolicy.canBid(user)).thenReturn(true);
-        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
         when(auctionDouble.getSeller()).thenReturn(userIdDouble);
+        when(user.identity()).thenReturn(userIdDouble);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForBids(user, auctionDouble);
+
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertTrue(methods.contains(HttpMethod.GET));
+        assertFalse(methods.contains(HttpMethod.POST));
+        assertEquals(2, methods.size());
+    }
+
+    @Test
+    void getAllowedMethodsForBidsUserCanViewAndBidContainsOptionsGetAndPost() {
+        User user = mock(User.class);
+        Auction auctionDouble = mock(Auction.class);
+        UserId sellerIdDouble = mock(UserId.class);
+        UserId userIdentityDouble = mock(UserId.class);
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(true);
+        when(authorizationPolicy.canBid(user)).thenReturn(true);
+        when(auctionDouble.getSeller()).thenReturn(sellerIdDouble);
+        when(user.identity()).thenReturn(userIdentityDouble);
 
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
@@ -256,13 +345,14 @@ class AuctionLinkProviderTest {
     void getAllowedMethodsForBidsUserCannotViewButCanBidContainsOptionsAndPostOnly() {
         User user = mock(User.class);
         Auction auctionDouble = mock(Auction.class);
-        UserId userIdDouble = mock(UserId.class);
+        UserId sellerIdDouble = mock(UserId.class);
+        UserId userIdentityDouble = mock(UserId.class);
 
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
         when(authorizationPolicy.canViewAuction(user)).thenReturn(false);
         when(authorizationPolicy.canBid(user)).thenReturn(true);
-        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
-        when(auctionDouble.getSeller()).thenReturn(userIdDouble);
+        when(auctionDouble.getSeller()).thenReturn(sellerIdDouble);
+        when(user.identity()).thenReturn(userIdentityDouble);
 
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 

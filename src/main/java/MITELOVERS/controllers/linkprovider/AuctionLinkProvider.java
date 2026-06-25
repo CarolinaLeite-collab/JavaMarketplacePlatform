@@ -1,7 +1,9 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.ItemRestController;
 import MITELOVERS.domain.auction.Auction;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -10,6 +12,7 @@ import MITELOVERS.controllers.rest.AuctionRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.BidResponseDTO;
+import org.springframework.hateoas.Links;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +51,11 @@ public class AuctionLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canSell(user)) {
             links.add(linkTo(AuctionRestController.class)
                     .withRel("auctions"));
+        }
+        if(_authorizationPolicy.cannotSeePrice(user)) {
+            links.add(
+                    linkTo(methodOn(AuctionRestController.class).getAuctionsWithoutPrice()).withRel("auctions-without-price")
+            );
         }
 
         return links;
@@ -99,6 +107,17 @@ public class AuctionLinkProvider implements RootLinkProvider {
         dto.add(linkTo(methodOn(AuctionRestController.class)
                 .getBidsForAuction(auctionId))
                 .withRel("bids"));
+    }
+
+    public void addLinksForAuction(AuctionNoPriceResponseDTO dto) {
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAllActiveAuctions())
+                .withRel("auctions"));
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAuctionsWithoutPrice())
+                .withRel("auctions-without-price"));
     }
 
     // Allowed HTTP methods for /auctions/{auctionId}/bids
