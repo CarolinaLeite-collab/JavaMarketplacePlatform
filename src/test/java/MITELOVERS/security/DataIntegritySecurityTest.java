@@ -2,10 +2,12 @@ package MITELOVERS.security;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -63,9 +65,25 @@ class DataIntegritySecurityTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuthorizationPolicy _authorizationPolicy;
+
     @Test
     @DisplayName("OWASP A08 Data Integrity: identical mutating request is accepted on replay — no idempotency key or nonce is enforced")
     void mutatingRequest_isAcceptedOnReplay_withNoIdempotencyControl() throws Exception {
+        // Arrange
+        User user = mock(User.class);
+        ListOfItems list = mock(ListOfItems.class);
+
+        when(_userService.getUserByEmail(any()))
+                .thenReturn(user);
+
+        when(_listService.getListById(any()))
+                .thenReturn(list);
+
+        when(_authorizationPolicy.canDeleteList(user, list))
+                .thenReturn(true);
+
         doNothing().when(_listService).deleteList(any());
 
         // First execution
@@ -85,6 +103,9 @@ class DataIntegritySecurityTest {
         ListOfItems domainList = mock(ListOfItems.class);
         ListOfItemsResponseDTO responseDTO = new ListOfItemsResponseDTO(
                 "LOI-1234", "owner@example.com", "Favourites", "fiction", false, null, List.of());
+
+        when(_authorizationPolicy.canSeeList(any(), any()))
+                .thenReturn(true);
         when(_listService.getListById(any())).thenReturn(domainList);
         when(_mapper.toModel(domainList)).thenReturn(responseDTO);
 
