@@ -258,7 +258,7 @@ export default function AuctionDetailPage() {
         ? `${edition.weight.value} ${edition.weight.unit}`
         : 'N/A';
     const dimensions          = edition?.dimension
-        ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.depth} ${edition.dimension.unit}`
+        ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.thickness} ${edition.dimension.unit}`
         : 'N/A';
     const seller          = sellerUsernameFromEmail(auction.seller) ?? 'Unknown';
 

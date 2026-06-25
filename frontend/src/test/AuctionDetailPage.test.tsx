@@ -33,8 +33,6 @@ const mockAuction = {
     priceCurrency: 'EUR',
     startDate: '2026-06-01T00:00:00Z',
     endDate: '2027-06-30T00:00:00Z',
-    bidCount: 3,
-    highestBid: 28.5,
     seller: 'pedro@aeiou.com',
     _links: {
         bids: { href: 'http://localhost:8081/auctions/test-123/bids' },
@@ -94,7 +92,7 @@ const mockEdition = {
     editionNumber: 1,
     binding: 'PAPERBACK',
     weight: { value: 794, unit: 'GRAMS' },
-    dimension: { width: 17.0, height: 24.0, depth: 2.5, unit: 'CENTIMETERS' },
+    dimension: { width: 17.0, height: 24.0, thickness: 2.5, unit: 'CENTIMETERS' },
 };
 
 const mockPublisher = {
@@ -154,8 +152,6 @@ describe('AuctionDetailPage', () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
             currentPrice: null,
-            highestBid: null,
-            bidCount: 0,
         });
         vi.mocked(apiClient.getByHref).mockResolvedValue({ _embedded: { bids: [] } });
 
