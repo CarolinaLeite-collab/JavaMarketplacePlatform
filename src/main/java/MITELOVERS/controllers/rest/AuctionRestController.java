@@ -90,7 +90,9 @@ public class AuctionRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuctionResponseDTO> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
+    public ResponseEntity<AuctionResponseDTO> createAuction (
+            @RequestBody @Valid CreateAuctionRequestDTO request,
+            @RequestHeader("X-User-Id") String email) {
         List<ItemId> itemIds = request.getItemIds().stream()
                 .map(ItemId::new)
                 .toList();
@@ -105,10 +107,10 @@ public class AuctionRestController {
         ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
         ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
 
-        UserId seller = new UserId(new Email(email));
+        User seller = _userService.getUserByEmail(new UserId(new Email(email)));
 
         Auction auction = _auctionService.putItemOnAuction(
-                itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller
+                itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller.identity()
         );
 
         AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
@@ -217,8 +219,8 @@ public class AuctionRestController {
             @RequestHeader("X-User-Id") String userIdFromHeader,
             @RequestBody @Valid PlaceBidRequestDTO request) {
 
-        Email email = new Email(userIdFromHeader);
-        UserId userId = new UserId(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(userIdFromHeader)));
+        UserId userId = user.identity();
 
         Currency currency = Currency.valueOf(request.getCurrency());
         Price offerPrice = new Price(request.getOfferPrice(), currency);

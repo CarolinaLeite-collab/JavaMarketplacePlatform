@@ -28,11 +28,12 @@ activate router
 router -> REST : placeBid(auctionIdString, %n()userIdFromHeader, placeBidRequestDTO)
 activate REST
 
-create "email:Email" as email
-REST -->> email : createEmail(userIdFromHeader)
+REST -> UserService : user = getUserByEmail(userIdFromHeader)
+activate UserService
+deactivate UserService
 
 create "userId:UserId" as userId
-REST -->> userId : createUserId(email)
+REST -->> userId : userId = user.identity()
 
 create "auctionId:AuctionId" as auctionId
 REST -->> auctionId : createAuctionId(auctionIdString)

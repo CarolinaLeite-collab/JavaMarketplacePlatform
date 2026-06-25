@@ -18,6 +18,7 @@ autonumber
 participant "Router" as router
 participant ":AuctionRestController" as REST
 participant ":AuctionLinkProvider" as Link
+participant ":UserService" as userService
 participant ":AuctionService" as Service
 participant ":AuctionFactory" as Factory
 participant ":IAuctionRepo" as auctionRepo
@@ -57,12 +58,15 @@ create "endDate:ZonedDateTime" as endDate
 REST -->> endDate : endDate = atZone(UTC)
 
 create "email:Email" as email
-REST -->> email : create(emailString)
+REST -->> email : email = create(emailString)
 
-create "seller:UserId" as seller
-REST -->> seller : create(email)
+REST -> userService : seller = getUserByEmail(UserId(email))
+activate userService
 
-REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate, seller)
+userService --> REST : seller
+deactivate userService
+
+REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate, seller.identity())
 activate Service
 
 loop for each item - validation
