@@ -2,6 +2,7 @@ package MITELOVERS.security;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * OWASP A04:2021 — Insecure Design / Information Disclosure
  *
- * Documents user enumeration via the OPTIONS ?email= endpoint.
+ * Documents user enumeration via the OPTIONS X-User-Id header.
  * The application responds differently (404 vs 200) depending on whether
  * the supplied email belongs to a registered account, providing a binary
  * oracle that allows an attacker to enumerate valid user accounts.
@@ -53,6 +54,9 @@ class UserEnumerationSecurityTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuthorizationPolicy _authorizationPolicy;
+
     @Test
     @DisplayName("OWASP A04 Info Disclosure: OPTIONS returns 404 with email in body for non-existent account")
     void options_returns404WithEmailInBody_whenUserNotFound() throws Exception {
@@ -60,7 +64,8 @@ class UserEnumerationSecurityTest {
         when(_userService.getUserByEmail(new UserId(new Email(nonExistentEmail))))
                 .thenThrow(new NoSuchElementException("User not found: " + nonExistentEmail));
 
-        _mockMvc.perform(options("/my-lists").param("email", nonExistentEmail))
+        _mockMvc.perform(options("/my-lists")
+                        .header("X-User-Id", nonExistentEmail))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("User not found: " + nonExistentEmail));
     }
@@ -73,7 +78,8 @@ class UserEnumerationSecurityTest {
         when(_userService.getUserByEmail(new UserId(new Email(existingEmail)))).thenReturn(user);
         when(_linkProvider.getLinks(user)).thenReturn(List.of());
 
-        _mockMvc.perform(options("/my-lists").param("email", existingEmail))
+        _mockMvc.perform(options("/my-lists")
+                        .header("X-User-Id", existingEmail))
                 .andExpect(status().isOk());
     }
 
@@ -84,7 +90,8 @@ class UserEnumerationSecurityTest {
         when(_userService.getUserByEmail(new UserId(new Email(targetEmail))))
                 .thenThrow(new NoSuchElementException("User not found: " + targetEmail));
 
-        _mockMvc.perform(options("/my-lists").param("email", targetEmail))
+        _mockMvc.perform(options("/my-lists")
+                        .header("X-User-Id", targetEmail))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString(targetEmail)));
     }
