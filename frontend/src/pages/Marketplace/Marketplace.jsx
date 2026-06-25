@@ -122,10 +122,12 @@ async function discoverMarketplaceHref(existingHref, relation) {
 export default function Marketplace() {
     const { state } = useContext(AppContext);
     const { activeDirectSalesHref, directSalesWithoutPriceHref } = state.app;
+    const {activeAuctionsHref, auctionsWithoutPriceHref} = state.app;
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
     const canSeePrice = isLoggedIn;
-    const marketplaceHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
+    const directSalesHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
+    const auctionsHref = isLoggedIn ? activeAuctionsHref : auctionsWithoutPriceHref;
 
     const [items, setItems] = useState([]);
     const [genres, setGenres] = useState([]);
@@ -161,23 +163,31 @@ export default function Marketplace() {
             try {
                 setLoading(true);
                 setError('');
-                const marketplaceRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
-                const discoveredMarketplaceHref = await discoverMarketplaceHref(marketplaceHref, marketplaceRelation);
+                const directSaleRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
+                const auctionRelation = isLoggedIn ? 'auctions' : 'auctions-without-price';
+                const discoveredDirectSalesHref = await discoverMarketplaceHref(directSalesHref, directSaleRelation);
+                const discoveredAuctionsHref = await discoverMarketplaceHref(auctionsHref, auctionRelation);
 
-                if (!discoveredMarketplaceHref) {
-                    throw new Error(`Missing ${marketplaceRelation} link`);
+                if (!discoveredDirectSalesHref) {
+                    throw new Error(`Missing ${directSaleRelation} link`);
+                }
+
+                if (!discoveredAuctionsHref) {
+                    throw new Error(`Missing ${auctionRelation} link`);
                 }
 
                 const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
-                    apiClient.getByHref(discoveredMarketplaceHref),
-                    apiClient.getAuctions(),
+                    apiClient.getByHref(discoveredDirectSalesHref),
+                    apiClient.getByHref(discoveredAuctionsHref),
                     apiClient.getGenres(),
                 ]);
 
                 const directSales = directSalesResponse?._embedded
                     ? Object.values(directSalesResponse._embedded)[0] ?? []
                     : directSalesResponse ?? [];
-                const auctions = auctionsResponse ?? [];
+                const auctions = auctionsResponse?._embedded
+                    ? Object.values(auctionsResponse._embedded)[0] ?? []
+                    : auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
 
@@ -226,7 +236,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, [marketplaceHref, canSeePrice, isLoggedIn]);
+    }, [directSalesHref, auctionsHref, canSeePrice, isLoggedIn]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">
