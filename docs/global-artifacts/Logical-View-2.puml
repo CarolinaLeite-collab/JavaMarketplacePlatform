@@ -1,4 +1,4 @@
-@startuml
+ @startuml
 title MiteLovers Logical View %n() Level 2
 
 skinparam monochrome false

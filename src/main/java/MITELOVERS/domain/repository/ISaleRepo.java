@@ -3,6 +3,9 @@ package MITELOVERS.domain.repository;
 import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.UserId;
+
+import java.util.List;
 
 /**
  * Repository interface for managing persistence and retrieval of {@link Sale} aggregates.
@@ -13,5 +16,7 @@ import MITELOVERS.domain.valueobject.SaleId;
  */
 
 public interface ISaleRepo extends IRepository<SaleId, Sale> {
+
+    List<Sale> findByUserId(UserId userId);
 
 }

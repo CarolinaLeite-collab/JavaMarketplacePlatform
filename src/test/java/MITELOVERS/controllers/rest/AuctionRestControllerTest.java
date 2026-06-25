@@ -6,6 +6,8 @@ import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
@@ -208,7 +210,7 @@ class AuctionRestControllerTest {
         // arrange
         User user = mock(User.class);
 
-        when(_userService.getUserByEmail("user@test.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@test.com"))))
                 .thenReturn(user);
 
         when(_auctionLinkProvider.getAllowedMethods(user))
@@ -235,7 +237,7 @@ class AuctionRestControllerTest {
         // arrange
         User user = mock(User.class);
 
-        when(_userService.getUserByEmail("user@test.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@test.com"))))
                 .thenReturn(user);
 
         when(_auctionLinkProvider.getAllowedMethods(user))
@@ -264,7 +266,7 @@ class AuctionRestControllerTest {
         String auctionId = "AU-12345678";
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionLinkProvider.getLinks(userDouble, auctionId))
@@ -287,7 +289,7 @@ class AuctionRestControllerTest {
         String auctionId = "AU-12345678";
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionLinkProvider.getLinks(userDouble, auctionId))
@@ -363,7 +365,7 @@ class AuctionRestControllerTest {
         String auctionId = "AU-12345678";
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))
@@ -386,7 +388,7 @@ class AuctionRestControllerTest {
         String auctionId = "AU-12345678";
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))

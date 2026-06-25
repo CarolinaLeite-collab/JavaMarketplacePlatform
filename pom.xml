@@ -22,6 +22,10 @@
     <properties>
         <java.version>21</java.version>
 
+        <!-- Jackson -->
+        <jackson-bom.version>3.1.4</jackson-bom.version>
+        <jackson-2-bom.version>2.21.4</jackson-2-bom.version>
+
         <!-- Coverage -->
         <jacoco.version>0.8.13</jacoco.version><!-- was0.8.11 -->
 

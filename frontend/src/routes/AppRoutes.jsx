@@ -9,6 +9,8 @@ import {useContext} from 'react';
 import AppContext from '../context/AppContext';
 import {useUser} from '../context/UserContext';
 import AuctionDetailPage from '../pages/AuctionDetail/AuctionDetailPage.jsx';
+import DirectSaleDetailPage from '../pages/DirectSale/DirectSaleDetailPage.jsx';
+import SalesPage from '../pages/Sales/SalesPage.jsx';
 
 function ProtectedRoute({ href, children }) {
     if (!href) return <Navigate to="/" replace />;
@@ -17,7 +19,7 @@ function ProtectedRoute({ href, children }) {
 
 export function AppRoutes() {
     const { state } = useContext(AppContext);
-    const { myListsHref, libraryHref } = state.app;
+    const { myListsHref, libraryHref, salesHref } = state.app;
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
 
@@ -56,12 +58,29 @@ export function AppRoutes() {
                     <MyLibraryPage />
                 </ProtectedRoute>
             } />
+
+            {/* My Purchases */}
+            <Route
+                path="/sales"
+                element={
+                    <ProtectedRoute href={isLoggedIn ? salesHref : null}>
+                        <SalesPage />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* My Lists */}
             <Route path="/my-lists/:listId" element={
                 <ProtectedRoute href={isLoggedIn ? myListsHref : null}>
                     <ListDetailPage />
                 </ProtectedRoute>
             } />
             <Route path="/auctions/:auctionId" element={<AuctionDetailPage />} />
+
+
+            {/* DirectSale */}
+            <Route path="/directSales/:directSaleId"
+                   element={<DirectSaleDetailPage />} />
 
         </Routes>
     );
