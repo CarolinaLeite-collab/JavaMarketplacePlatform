@@ -27,6 +27,6 @@ public class PublicationDataModel {
     private String releaseYear;
     @Column(name = "genre_id", nullable = false)
     private String genreId;
-    @Column(name = "synopsis", nullable = false)
+    @Column(name = "synopsis")
     private String synopsis;
 }
