@@ -6,6 +6,8 @@ import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -55,7 +57,7 @@ class UserEnumerationSecurityTest {
     @DisplayName("OWASP A04 Info Disclosure: OPTIONS returns 404 with email in body for non-existent account")
     void options_returns404WithEmailInBody_whenUserNotFound() throws Exception {
         String nonExistentEmail = "nonexistent@example.com";
-        when(_userService.getUserByEmail(nonExistentEmail))
+        when(_userService.getUserByEmail(new UserId(new Email(nonExistentEmail))))
                 .thenThrow(new NoSuchElementException("User not found: " + nonExistentEmail));
 
         _mockMvc.perform(options("/my-lists").param("email", nonExistentEmail))
@@ -68,7 +70,7 @@ class UserEnumerationSecurityTest {
     void options_returns200_whenUserExists() throws Exception {
         String existingEmail = "existing@example.com";
         User user = mock(User.class);
-        when(_userService.getUserByEmail(existingEmail)).thenReturn(user);
+        when(_userService.getUserByEmail(new UserId(new Email(existingEmail)))).thenReturn(user);
         when(_linkProvider.getLinks(user)).thenReturn(List.of());
 
         _mockMvc.perform(options("/my-lists").param("email", existingEmail))
@@ -79,7 +81,7 @@ class UserEnumerationSecurityTest {
     @DisplayName("OWASP A04 Info Disclosure: 404 body leaks the queried email address")
     void options_leaksEmailInErrorBody_forUnknownAccount() throws Exception {
         String targetEmail = "victim@example.com";
-        when(_userService.getUserByEmail(targetEmail))
+        when(_userService.getUserByEmail(new UserId(new Email(targetEmail))))
                 .thenThrow(new NoSuchElementException("User not found: " + targetEmail));
 
         _mockMvc.perform(options("/my-lists").param("email", targetEmail))

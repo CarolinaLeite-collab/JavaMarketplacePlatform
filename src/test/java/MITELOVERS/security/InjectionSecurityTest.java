@@ -15,11 +15,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.NoSuchElementException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,21 +24,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * OWASP A05:2025 — Injection
  *
- * Documents the absence of input validation and sanitisation at the HTTP boundary.
- * User-supplied values — such as the {@code ?email} query parameter and path variables
- * like {@code {listId}} — are forwarded to the service and domain layers without any
- * format enforcement or character-level sanitisation. While JPA parameterisation
- * mitigates direct SQL injection against the database, the lack of validation at the
- * controller level allows injection-style payloads to propagate verbatim through the
- * application stack, reaching logging subsystems (log injection), error messages
- * (information disclosure), and downstream consumers of these values.
+ * Documents the input-validation posture at the HTTP boundary for the
+ * {@link ListOfItemsRestController} endpoints.
  *
- * <p><strong>Accepted-Risk Documentation:</strong> These tests intentionally pass
- * because the conditions they describe exist in the current codebase. They do not
- * assert that input validation controls are in place; rather, they serve as a formal,
- * traceable record of risks acknowledged by the team. Adding {@code @Valid} annotations,
- * email-format constraints, and path-variable pattern restrictions is outside the scope
- * of this sprint and is tracked as a separate backlog item.</p>
+ * <p><strong>{@code ?email} query parameter — format validation IS enforced.</strong>
+ * The OPTIONS endpoint converts the raw {@code ?email} parameter into an {@code Email}
+ * value object ({@code new Email(email)}). The {@code Email} constructor validates the
+ * value against a strict format pattern and throws {@link IllegalArgumentException} for
+ * malformed input, which {@link CustomRestExceptionHandler} maps to HTTP 400. As a
+ * result, injection-style payloads (SQL/log/command fragments containing quotes,
+ * semicolons, whitespace, etc.) are rejected at the controller boundary and never reach
+ * the service or domain layers. The first test below documents this control.</p>
+ *
+ * <p><strong>{@code {listId}} path variable — NO format validation.</strong> Path
+ * variables are forwarded into the service layer without character-level pattern
+ * enforcement. The second test below documents this remaining gap: an injection-style
+ * payload propagates verbatim to the service. Pattern-restricting path variables is
+ * outside the scope of this sprint and is tracked as a separate backlog item.</p>
+ *
+ * <p><strong>Note on evolution:</strong> a previous iteration documented the {@code ?email}
+ * parameter as <em>unvalidated</em> (accepted risk). The introduction of {@code Email}
+ * value-object validation at the boundary turned that accepted risk into an enforced
+ * control; this test was updated to reflect the control now in place.</p>
  */
 @Tag("security")
 @WebMvcTest(ListOfItemsRestController.class)
@@ -64,17 +68,22 @@ class InjectionSecurityTest {
     private UserService _userService;
 
     @Test
-    @DisplayName("OWASP A05 Injection: SQL-like payload in ?email= parameter reaches the service layer without format validation")
-    void emailParameter_acceptsSqlPayload_withNoValidationAtHttpLayer() throws Exception {
+    @DisplayName("OWASP A05 Injection: SQL-like payload in ?email= is rejected by Email format validation at the controller boundary (400), never reaching the service")
+    void emailParameter_rejectsSqlPayload_atValidationBoundary() throws Exception {
+        // A SQL-injection payload is not a syntactically valid email. The controller builds
+        // `new Email(email)`, whose constructor throws IllegalArgumentException ("Invalid email
+        // format!"), mapped to HTTP 400 by CustomRestExceptionHandler. The payload is rejected
+        // at the boundary, so the service is never invoked.
+        // NOTE: we pass the payload as a raw request param and let the controller validate it.
+        // We intentionally do NOT build `new Email(payload)` here — that would throw inside the
+        // test itself, before exercising the controller.
         String sqlPayload = "' OR '1'='1'; DROP TABLE users; --";
-        when(_userService.getUserByEmail(eq(sqlPayload)))
-                .thenThrow(new NoSuchElementException("User not found: " + sqlPayload));
 
         _mockMvc.perform(options("/my-lists").param("email", sqlPayload))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
-        // Confirms the raw, unsanitised payload was passed directly to the service — no controller-level rejection occurred
-        verify(_userService).getUserByEmail(sqlPayload);
+        // The malformed value was rejected at the validation boundary: the service was never reached.
+        verify(_userService, never()).getUserByEmail(any());
     }
 
     @Test

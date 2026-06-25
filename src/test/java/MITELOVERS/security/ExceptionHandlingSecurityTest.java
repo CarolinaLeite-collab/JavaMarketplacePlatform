@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -85,7 +87,7 @@ class ExceptionHandlingSecurityTest {
     @DisplayName("OWASP A10 Exception Handling: queried email is reflected in error body via OPTIONS endpoint, enabling differential enumeration")
     void queriedEmail_isReflectedInErrorBody_enablingDifferentialEnumeration() throws Exception {
         String targetEmail = "victim@example.com";
-        when(_userService.getUserByEmail(eq(targetEmail)))
+        when(_userService.getUserByEmail(eq(new UserId(new Email(targetEmail)))))
                 .thenThrow(new NoSuchElementException("User not found: " + targetEmail));
 
         _mockMvc.perform(options("/my-lists").param("email", targetEmail))
