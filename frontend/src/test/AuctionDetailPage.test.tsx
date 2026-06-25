@@ -32,7 +32,7 @@ const mockAuction = {
     currentPrice: 28.5,
     priceCurrency: 'EUR',
     startDate: '2026-06-01T00:00:00Z',
-    endDate: '2026-06-25T00:00:00Z',
+    endDate: '2027-06-30T00:00:00Z',
     bidCount: 3,
     highestBid: 28.5,
     seller: 'pedro@aeiou.com',
@@ -282,11 +282,15 @@ describe('AuctionDetailPage', () => {
     });
 
     it('renders Place Bid button enabled for logged-in user when bids link exists and auction is active', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'ana@aeiou.com',
+            toggleUser: vi.fn()
+        });
         renderAuctionDetail();
 
         const button = await screen.findByRole('button', { name: /place bid/i });
         expect(button).toBeInTheDocument();
-        expect(button).not.toBeDisabled();
+        expect(button).toBeEnabled();
     });
 
     it('disables Place Bid for guest user', async () => {
