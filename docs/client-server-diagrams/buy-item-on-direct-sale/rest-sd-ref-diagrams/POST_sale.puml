@@ -29,7 +29,7 @@ alt email is blank
 
 alt email is blank
     ref over REST, router
-        [[checkEmailNotBlank.puml checkEmailNotBlank — 403 Forbidden]]
+        [[checkEmailNotBlankFragment.puml checkEmailNotBlank — 403 Forbidden]]
     end ref
 
 else email is not blank

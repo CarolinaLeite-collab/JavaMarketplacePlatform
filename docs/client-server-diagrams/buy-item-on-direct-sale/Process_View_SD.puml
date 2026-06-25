@@ -36,8 +36,8 @@ activate FRONTEND
 FRONTEND -> SERVER : OPTIONS {shopping-cart href}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml OPTIONS for cartLines on /shopping-carts/{cartId}/shopping-cart-lines                 ]]
+ref over SERVER, DB
+[[xxx.puml OPTIONS for cartLines on /shopping-carts/{cartId}/shopping-cart-lines]]
 end ref
 
 SERVER --> FRONTEND : 200 OK + Allow: [POST, OPTIONS]
@@ -46,8 +46,8 @@ deactivate SERVER
 FRONTEND -> SERVER : POST {shopping-cart href} + \nbody: { addToCartCartLineRequestDTO }
 activate SERVER
 
-ref over SERVER
-[[xxx.puml POST cartLine on /shopping-carts/{cartId}/shopping-cart-lines                              ]]
+ref over SERVER, DB
+[[xxx.puml POST cartLine on /shopping-carts/{cartId}/shopping-cart-lines]]
 end ref
 
 SERVER --> FRONTEND : 201 Created\n+ self link (shopping-cart-line)\n+ shopping-cart link
@@ -62,8 +62,8 @@ activate FRONTEND
 FRONTEND -> SERVER : OPTIONS {shopping-cart link}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml OPTIONS for cart on /shopping-carts/{cartId}                                                    ]]
+ref over SERVER, DB
+[[xxx.puml OPTIONS for cart on /shopping-carts/{cartId}]]
 end ref
 
 SERVER --> FRONTEND : 200 OK + Allow: [GET, PATCH, OPTIONS]
@@ -72,8 +72,8 @@ deactivate SERVER
 FRONTEND -> SERVER : GET {shopping-cart link}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml GET cart on /shopping-carts/{cartId}                                                                  ]]
+ref over SERVER, DB
+[[xxx.puml GET cart on /shopping-carts/{cartId}]]
 end ref
 
 SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ shopping-cart-line links (one per line)\n+ sale link (only if cart has lines)
@@ -84,7 +84,7 @@ loop for each shopping-cart-line href received above
 FRONTEND -> SERVER : OPTIONS {shopping-cart-line href}
 activate SERVER
 
-ref over SERVER
+ref over SERVER, DB
 [[xxx.puml OPTIONS for cartLine on /shopping-carts/{cartId}/shopping-cart-lines/{cartLineId}]]
 end ref
 
@@ -94,8 +94,8 @@ deactivate SERVER
 FRONTEND -> SERVER : GET {shopping-cart-line href}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml GET cartLine on /shopping-carts/{cartId}/shopping-cart-lines/{cartLineId}              ]]
+ref over SERVER, DB
+[[xxx.puml GET cartLine on /shopping-carts/{cartId}/shopping-cart-lines/{cartLineId}]]
 end ref
 
 SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ direct-sale link
@@ -104,8 +104,8 @@ deactivate SERVER
 FRONTEND -> SERVER : OPTIONS {direct-sale href}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml OPTIONS for directSale on /direct-sales/{directSaleId                                         ]]
+ref over SERVER, DB
+[[xxx.puml OPTIONS for directSale on /direct-sales/{directSaleId]]
 end ref
 
 SERVER --> FRONTEND : 200 OK + Allow: [GET, OPTIONS]
@@ -114,8 +114,8 @@ deactivate SERVER
 FRONTEND -> SERVER : GET {direct-sale href}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml GET directSale on /direct-sales/{directSaleId}                                                     ]]
+ref over SERVER, DB
+[[xxx.puml GET directSale on /direct-sales/{directSaleId}]]
 end ref
 
 SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ item links (one per item)\n+ shopping-cart link (if ACTIVE and not seller)
@@ -132,8 +132,8 @@ activate FRONTEND
 FRONTEND -> SERVER : OPTIONS {sale link}
 activate SERVER
 
-ref over SERVER
-[[xxx.puml OPTIONS for sales on /sales                                                                            ]]
+ref over SERVER, DB
+[[xxx.puml OPTIONS for sales on /sales]]
 end ref
 
 SERVER --> FRONTEND : 200 OK + Allow: [GET, POST, OPTIONS]
@@ -142,8 +142,8 @@ deactivate SERVER
 FRONTEND -> SERVER : POST {sale link}\nbody: { shoppingCartId }
 activate SERVER
 
-ref over SERVER
-[[./rest-sd-ref-diagrams/POST_sale.puml POST sale on /sales                                                                                        ]]
+ref over SERVER, DB
+[[./rest-sd-ref-diagrams/POST_sale.puml POST sale on /sales]]
 end ref
 
 SERVER --> FRONTEND : 201 Created\n+ self link (sale)

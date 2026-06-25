@@ -16,18 +16,14 @@ autonumber
 participant ":SaleService" as Service
 participant ":SaleLineFactory" as SaleLineFactory
 participant ":SaleFactory" as SaleFactory
-participant "saleLine:SaleLine" as SaleLine
-participant "shoppingCartLine:ShoppingCartLine" as SCLine
+participant "shoppingCartLine:ShoppingCartLine" as SCLines
 
 activate Service
 
 create "saleLines:List<SaleLine>" as SaleLines
 Service -->> SaleLines : create
 
-create "shoppingCartLines:List<ShoppingCartLine>" as SCLines
-Service -->> SCLines : create
-
-loop for each shoppingCartLine in cart
+loop for each shoppingCartLine in cart.getCartLines()
 
 Service -> SCLines : SellerId = shoppingCartLine.getSellerId()
 activate SCLines
