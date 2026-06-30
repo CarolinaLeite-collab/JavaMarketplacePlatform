@@ -277,5 +277,8 @@ Sale "*" .> "1" UserId : references
 SaleLine "*" .> "1" UserId : references
 SaleLine "*" .> "1" DirectSaleId : references
 
+ShoppingCart "1" ..> "1" Sale : checks out to
+ShoppingCartLine "1..*" ..> "1..*" SaleLine : checks out to
+
 
 @enduml

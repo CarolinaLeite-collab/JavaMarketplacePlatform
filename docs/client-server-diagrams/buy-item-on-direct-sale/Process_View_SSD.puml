@@ -19,7 +19,7 @@ title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SSD
 
 ' --- Actor and participants ---
 
-Actor Actor as BUYER
+Actor User as BUYER
 participant ":Mitelovers" as mite
 
 BUYER -> mite : I want to add a Direct Sale to my Shopping Cart

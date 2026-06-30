@@ -19,24 +19,34 @@ Package "domain" {
 
     Package "sale" <<Folder>> #b0c4d4 {
         class Sale <<Entity>> <<Root>> {
-            - createdAt : LocalDateTime
-            + getBuyerId() : UserId
-            + getTotalAmount() : Price
+            - _createdAt : LocalDateTime
+            - _completedAt : LocalDateTime
+            + get_buyerId() : UserId
+            + get_totalAmount() : Price
+            + get_saleLines() : List<SaleLine>
+            + get_saleSaleStatus() : SaleSaleStatus
+            + get_createdAt() : LocalDateTime
+            + get_completedAt() : LocalDateTime
+            + markSaleAsCompleted() : void
+            + markSaleAsCancelled() : void
+            - calculateTotalAmount() : Price
+            - validateSaleLines(saleLines : List<SaleLine>) : List<SaleLine>
         }
 
         class SaleLine <<Entity>> {
-            + getDirectSaleId() : DirectSaleId
-            + getSellerId() : UserId
-            + getPriceAtSale() : Price
+            + get_saleLineId() : SaleLineId
+            + get_directSaleId() : DirectSaleId
+            + get_sellerId() : UserId
+            + get_priceAtSale() : Price
                 }
 
         class SaleFactory <<Factory>> {
-            +createSale() : Sale
-            +reconstituteSale() : Sale
+            +createSale(buyerId : UserId, saleLines : List<SaleLine>) : Sale
+            +createSale(saleId : SaleId, buyerId : UserId, saleLines : List<SaleLine>, createdAt : LocalDateTime, completedAt : LocalDateTime, saleSaleStatus : SaleSaleStatus) : Sale
         }
         class SaleLineFactory <<Factory>> {
-            +createSaleLine() : SaleLine
-            +reconstituteSaleLine() : SaleLine
+            +createSaleLine(sellerId : UserId, priceAtSale : Price, directSaleId : DirectSaleId) : SaleLine
+            +createSale(saleLineId : SaleLineId, sellerId : UserId, priceAtSale : Price, directSaleId : DirectSaleId) : SaleLine
         }
     }
 
@@ -49,7 +59,10 @@ Package "domain" {
         -_id :String
                     }
 
-        enum SaleStatus {
+        enum SaleSaleStatus {
+            PENDING
+            COMPLETED
+            CANCELLED
         }
 
                 class UserId <<Value Object>>
@@ -59,6 +72,7 @@ Package "domain" {
 
     Package "repository" <<Folder>> {
         interface ISaleRepo <<Interface>> {
+            +findByUserId(userId : UserId) : List<Sale>
         }
     }
 }
@@ -91,7 +105,7 @@ Sale "*"..> "1" UserId : references
 Sale "1" -> "1" Price : has
 SaleLine "1" -> "1" Price : has
 
-Sale "*" -> "1" SaleStatus : has
+Sale "*" -> "1" SaleSaleStatus : has
 
 SaleLine "*"..> "1" DirectSaleId : references
 SaleLine "*"..> "1" UserId : references

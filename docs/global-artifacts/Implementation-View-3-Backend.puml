@@ -1,0 +1,76 @@
+@startuml
+
+'==== Title ====
+title MiteLovers – Implementation View – Backend – Level 3
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+skinparam PackageBorderColor #4B9DA9
+skinparam componentStyle uml2
+
+interface "API" as API
+
+component "Backend" as MDR <<component>> <<container (C4)>> {
+
+    port " " as p_api
+
+    component "Controller" as Controller <<component>>
+    component "VO" as DTO <<component>>
+    component "Application Service" as AppService <<component>>
+    component "Domain Model (DDD)" as DomainModel <<component>>
+    component "Repository" as Repository <<component>>
+    component "Persistence" as Persistence <<component>>
+    component "Data Model" as DataModel <<component>>
+
+    interface "App Service API" as AppServiceAPI
+    interface "VO API" as DTOAPI
+    interface "Model API" as ModelAPI
+    interface "Repo API" as RepoAPI
+    interface "Persistence API" as PersistenceAPI
+    interface "Data Model API" as DataModelAPI
+
+    ' left column (backbone, top to bottom)
+    Controller -[hidden]down-> AppService
+    AppService -[hidden]down-> Repository
+    Repository -[hidden]down-> Persistence
+
+    ' right column (anchored next to its left-column counterpart)
+    Controller -[hidden]right-> DTO
+    AppService -[hidden]right-> DomainModel
+    Repository -[hidden]right-> DataModel
+
+
+   Controller - p_api
+   Controller -( AppServiceAPI
+   Repository --- RepoAPI
+   AppService --( RepoAPI
+
+   DTOAPI - DTO
+   ModelAPI -- DomainModel
+   DataModelAPI -- DataModel
+   Persistence -- PersistenceAPI
+   Repository --( PersistenceAPI
+   DomainModel ---( DTOAPI
+
+   AppService -( DTOAPI
+   Controller -( DTOAPI
+   AppService -- AppServiceAPI
+   AppService -( ModelAPI
+   Repository -( ModelAPI
+   Repository -( DataModelAPI
+   Persistence -( DataModelAPI
+
+}
+
+API -- p_api
+
+@enduml
