@@ -49,6 +49,8 @@ package "domain" {
         + clearShoppingCart() : void
         + addCartLine(shoppingCartLine : ShoppingCartLine) : void
         + removeCartLine(cartLineId : ShoppingCartLineId) : void
+        - allCartLinesShareSameCurrency(cartLines : List<ShoppingCartLine>) : boolean
+        - isSameCurrencyAsExisting(shoppingCartLine : ShoppingCartLine) : boolean
         - recalculateTotalAmount() : void
         }
 

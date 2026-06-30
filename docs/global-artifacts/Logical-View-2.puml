@@ -18,16 +18,17 @@ component "MiteLovers" as MiteLovers <<System>> {
     port " " as API_Port
     port " " as UI_Port
 
-    component "db" as DB {
+    component "db" as DB <<Component>> <<Container(C4)>> {
+
         port " " as DB_Port
     }
 
-    component "Frontend" as FE {
+    component "Frontend" as FE <<Component>> <<Container(C4)>> {
         port " " as FE_UI_Port
         port " " as FE_API_Port
     }
 
-    component "Backend" as BE {
+    component "Backend" as BE <<Component>> <<Container(C4)>> {
         port " " as BE_Port
         port " " as BE_Port_to_DB
     }

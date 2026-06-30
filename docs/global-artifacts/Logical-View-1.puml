@@ -14,7 +14,7 @@ skinparam classAttributeIconSize 0
 skinparam PackageBorderColor #4B9DA9
 top to bottom direction
 
-component "MiteLovers" as MiteLovers <<System>>
+component "MiteLovers" as MiteLovers <<Component>> <<System(C4)>>
 
 interface "UI"
 interface "API"
